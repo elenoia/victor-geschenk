@@ -409,75 +409,23 @@ body::before{
 }
 
 /* ============================================================
-   ECHO-FLUT
+   RAND-STICKER (drei fixierte Fotos an den Rändern, scroll-reaktiv)
 ============================================================ */
-#echoLayer{
-  position:fixed; inset:0;
-  z-index:1;               /* hinter dem Inhalt (stage z-index:2) */
-  overflow:hidden;
-  pointer-events:none;
-}
-.echo{
-  position:absolute;
-  transform:translate(-50%,-50%) rotate(var(--er)) scale(0);
+.edge-layer{ position:fixed; inset:0; z-index:30; pointer-events:none; }
+.edge{
+  position:fixed;
+  width:clamp(100px,18vw,180px);
+  aspect-ratio:1/1;
   opacity:0;
   will-change:transform,opacity;
+  transition:opacity .4s ease, transform .55s cubic-bezier(.2,1.25,.4,1);
 }
-.echo.pop{
-  animation:echoPop .5s cubic-bezier(.2,1.5,.35,1) forwards;
-  animation-delay:var(--ed,0s);
-}
-@keyframes echoPop{
-  0%  { transform:translate(-50%,-50%) rotate(var(--er)) scale(0);   opacity:0; }
-  62% { transform:translate(-50%,-50%) rotate(var(--er)) scale(1.14); opacity:1; }
-  100%{ transform:translate(-50%,-50%) rotate(var(--er)) scale(1);    opacity:1; }
-}
-
-/* Text-Sticker in der Flut – Wörter auf Papier-Aufklebern */
-.echo-tag{
-  display:inline-block;
-  font-family:var(--disp);
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:-.01em;
-  line-height:1;
-  padding:.3em .6em;
-  background:var(--tag);
-  color:var(--ink);
-  border:1.6px solid var(--ink);
-  box-shadow:2px 3px 0 rgba(28,28,26,.2);
-  white-space:nowrap;
-}
-.echo-tag.a-ink{ background:var(--ink);    color:var(--paper); }
-.echo-tag.a-r1 { background:var(--riso-1); color:var(--paper); }
-.echo-tag.a-r2 { background:var(--riso-2); color:var(--paper); }
-
-/* ============================================================
-   HERO-STICKER (Mobile: drei grosse Fotos nacheinander über der Karte)
-============================================================ */
-.hero-layer{ position:fixed; inset:0; z-index:46; pointer-events:none; }
-.hero-sticker{
-  position:absolute;
-  width:min(58vw,40vh);
-  aspect-ratio:1/1;
-  transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(.3);
-  opacity:0;
-  transition:opacity .25s ease, transform .5s cubic-bezier(.2,1.7,.4,1);
-}
-.hero-sticker.in{
-  opacity:1;
-  transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(1);
-  animation:hero-wobble 2.4s ease-in-out .5s infinite;
-}
-.hero-sticker.out{
-  opacity:0;
-  transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(.5);
-  animation:none;
-}
-@keyframes hero-wobble{
-  0%,100%{ transform:translate(-50%,-50%) rotate(var(--er)) scale(1); }
-  50%    { transform:translate(-50%,-50%) rotate(calc(var(--er) + 2.5deg)) scale(1.03); }
-}
+/* Grundzustand = ausgeblendet (jeweils zur eigenen Kante hinausgeschoben) */
+.edge.s1{ top:0;    left:0;  --vis:translate(-26%,-26%) rotate(-8deg); --hid:translate(-175%,-26%) rotate(-8deg); transform:var(--hid); }
+.edge.s2{ top:50%;  left:0;  --vis:translate(-30%,-50%) rotate(6deg);  --hid:translate(-175%,-50%) rotate(6deg);  transform:var(--hid); }
+.edge.s3{ bottom:0; right:0; --vis:translate(26%,26%)  rotate(-5deg);  --hid:translate(175%,26%)  rotate(-5deg);  transform:var(--hid); }
+/* eingeblendet */
+.edge.show{ opacity:1; transform:var(--vis); }
 
 /* ============================================================
    OVERLAYS: Flash + Partikel-Canvas
@@ -527,21 +475,14 @@ body::before{
   .stage.shake{ animation:none; }
   .teaser{ transition:opacity .5s ease; transform:none; }
   .resolve{ transition:opacity .5s ease; transform:none; }
-  .echo.pop{ animation:echoFade .4s ease forwards; animation-delay:var(--ed,0s); }
-  @keyframes echoFade{ from{opacity:0} to{opacity:1} }
-  .echo{ transform:translate(-50%,-50%) rotate(var(--er)) scale(1); }
   .hint .arrow{ animation:none; opacity:1; }
   .hint .arrow path{ animation:none; stroke-dashoffset:0; }
-  /* Hero-Sticker ohne Pop/Wackeln – direkt sichtbar */
-  .hero-sticker{ transition:opacity .3s ease; transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(1); }
-  .hero-sticker.in{ animation:none; transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(1); }
+  /* Rand-Sticker ohne Slide: nur ein-/ausblenden an fester Position */
+  .edge{ transition:opacity .3s ease; transform:var(--vis) !important; }
 }
 </style>
 </head>
 <body>
-
-<!-- Echo-Hintergrundschicht (wird per JS geflutet) -->
-<div id="echoLayer" aria-hidden="true"></div>
 
 <main class="stage" id="stage">
 
@@ -626,7 +567,7 @@ body::before{
         <span class="tag riso-2-outline rot-r" style="--rot:3deg">Nichts</span>
       </div>
 
-      <p class="body">Hiermit sei feierlich verkündet: <span class="hl">Zwischen uns wird künftig zu keinem Geburtstag mehr geschenkt</span>. Nie wieder wirst du an einem grauen Novemberabend wach liegen müssen und dich fragen, ob Gregor schon was besorgt hat oder ob Amazon Prime noch rechtzeitig liefern wird: <span class="hl">Du bist von der sozialen Pflicht des Schenkens entbunden</span>. Und dem, was noch viiiiieeeel schwerer wiegt: Von der Pflicht, darüber nachzudenken. :-D Happy Platz-im-Kopf-für-Anderes, entgegen sozialer Normen! :-) Fühl dich gedrückt!</p>
+      <p class="body">Hiermit sei feierlich verkündet: <span class="hl">Zwischen uns wird künftig zu keinem Geburtstag mehr geschenkt</span>. Nie wieder wirst du an einem grauen Novemberabend wach liegen müssen und dich fragen, ob Gregor schon was besorgt hat oder ob Amazon Prime noch rechtzeitig liefern wird: <span class="hl">Du bist von der sozialen Pflicht des Schenkens entbunden</span>. Und dem, was noch viiiiieeeel schwerer wiegt: Von der Pflicht, darüber nachzudenken. Happy Platz-im-Kopf-für-Anderes, entgegen sozialer Normen! Fühl dich gedrückt! :-)</p>
 
       <div class="divider" aria-hidden="true">
         <span class="ln"></span><span class="burst">✳</span><span class="smiley">☺</span><span class="burst">✳</span><span class="ln"></span>
@@ -659,20 +600,8 @@ const STICKER_IMAGES = [
 const NAME = "Victor";
 
 // Sollen die Foto-Sticker in Graustufen laufen? (Zine-Disziplin = true.)
-// Auf false stellen, wenn die Motive in Farbe fluten sollen.
+// Auf false stellen, wenn die Motive in Farbe erscheinen sollen.
 const STICKER_GRAYSCALE = true;
-
-// Text-Sticker, die zusätzlich zu den Fotos durch die Flut ploppen.
-// Beliebig ergänzen/kürzen – werden in Grossbuchstaben dargestellt.
-const STICKER_WORDS = [
-  "kein Geschenk mehr",
-  "wow",
-  "nichts",
-  "endlich geschenke frei",
-  "nada",
-  "nix",
-  "jaaaa"
-];
 
 /* ============================================================
    INTERN
@@ -687,7 +616,6 @@ const emptyNote  = document.getElementById("emptyNote");
 const reveal     = document.getElementById("reveal");
 const teaser     = document.getElementById("teaser");
 const resolve    = document.getElementById("resolve");
-const echoLayer  = document.getElementById("echoLayer");
 const flash      = document.getElementById("flash");
 const canvas     = document.getElementById("poof");
 const ctx        = canvas.getContext("2d");
@@ -885,8 +813,8 @@ function showResolve(){
   resolve.classList.add("on");
   setTimeout(() => resolve.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"center"}), 260);
 
-  // Kurzer Beat, dann flutet der Sticker von selbst den Hintergrund
-  setTimeout(floodEcho, reduceMotion ? 900 : 1700);
+  // Kurzer Beat, dann kommen die drei Rand-Sticker herein
+  setTimeout(showEdgeStickers, reduceMotion ? 700 : 1500);
 }
 
 /* ============================================================
@@ -1006,193 +934,43 @@ function tick(){
 }
 
 /* ============================================================
-   SCHRITT 5: ECHO-FLUT (iMessage-Stil)
+   SCHRITT 5: RAND-STICKER (nach dem Öffnen, scroll-reaktiv)
+   oben links / mittig links / unten rechts – kein Text wird verdeckt.
+   Hochscrollen → raus, Runterscrollen → rein.
 ============================================================ */
-function floodEcho(){
-  if (flooded) return;
+let edgeEls = [];
+function showEdgeStickers(){
+  if (flooded) return;      // einmalig
   flooded = true;
 
-  // Handy bekommt einen eigenen Moment (grosse Fotos nacheinander + gröbere Flut)
-  if (isPhone()){ floodMobile(); return; }
-
-  const vw = innerWidth, vh = innerHeight;
-  const landscape = vw >= vh;
-  const unit = Math.min(vw, vh);
-  const textNom = Math.max(14, Math.min(unit * 0.045, 26));  // Nenngrösse der kleinen Text-Tags
-
-  const hasWords = STICKER_WORDS && STICKER_WORDS.length > 0;
-  const nextWord = makeQueue(STICKER_WORDS);   // zyklisch, ohne unmittelbare Wiederholung
-  const nextImg  = makeQueue(STICKER_IMAGES);
-
-  const frag = document.createDocumentFragment();
-  const zrand = () => 1 + Math.floor(Math.random() * 9);     // gemischter z-index → mal Foto, mal Tag oben
-
-  // ein Echo-Element (Foto oder Wort) platzieren
-  function place(x, y, o){
-    const el = document.createElement("div");
-    el.className = "echo";
-    el.style.left = x.toFixed(1) + "px";
-    el.style.top  = y.toFixed(1) + "px";
-    el.style.setProperty("--er", rand(-15, 15).toFixed(1) + "deg");   // Rotation −15°…+15°
-    el.style.setProperty("--ed", o.delay.toFixed(2) + "s");
-    el.style.zIndex = o.z;
-    if (o.word !== undefined){
-      el.innerHTML = textMarkup(o.word, textNom);
-    } else {
-      el.style.width  = o.size.toFixed(0) + "px";
-      el.style.height = o.size.toFixed(0) + "px";
-      el.innerHTML = stickerMarkup(o.src);
-    }
-    frag.appendChild(el);
-  }
-
-  // ---- 1) Foto-Anker: über Zonen verteilt, ein paar richtig gross ----
-  let colsP = landscape ? (vw > 1100 ? 5 : 4) : 3;
-  let rowsP = landscape ? (vh > 700 ? 3 : 2) : (vh > 780 ? 5 : 4);
-  if (reduceMotion){ colsP = Math.min(colsP, 3); rowsP = Math.min(rowsP, 3); }
-  const pCellW = vw / colsP, pCellH = vh / rowsP;
-
-  const zones = [];
-  for (let r = 0; r < rowsP; r++) for (let c = 0; c < colsP; c++) zones.push([c, r]);
-  // ~28% der Fotos als echte Blickfang-Anker (extra gross)
-  const bigCount = Math.max(1, Math.round(zones.length * 0.28));
-  const bigSet = new Set(shuffle(zones.map((_, i) => i)).slice(0, bigCount));
-
-  zones.forEach(([c, r], i) => {
-    const cx = (c + 0.5) * pCellW + rand(-0.3, 0.3) * pCellW;
-    const cy = (r + 0.5) * pCellH + rand(-0.3, 0.3) * pCellH;
-    const big = bigSet.has(i);
-    // Fotobreite als Anteil der Viewport-Breite, ~30% kleiner als zuvor
-    let size = vw * (big ? rand(0.32, 0.42) : rand(0.22, 0.32)) * 0.7;
-    size = Math.min(size, unit * (big ? 0.66 : 0.52) * 0.7);          // auf Hochkant nicht sprengen
-    const delay = reduceMotion ? rand(0, 0.4) : (i * (0.7 / zones.length) + rand(0, 0.08));
-    place(cx, cy, { src: nextImg(), size, z: zrand() + (big ? 2 : 0), delay });
-  });
-
-  // ---- 2) Kleine Text-Tags in die Lücken streuen ----
-  if (hasWords){
-    let targetT = Math.round((vw * vh) / 26000);
-    targetT = Math.max(18, Math.min(targetT, reduceMotion ? 30 : 78));
-    const colsT = Math.max(4, Math.round(Math.sqrt(targetT * vw / vh)));
-    const rowsT = Math.max(3, Math.round(targetT / colsT));
-    const tCellW = vw / colsT, tCellH = vh / rowsT;
-    const totalT = colsT * rowsT;
-    let ti = 0;
-    for (let r = 0; r < rowsT; r++){
-      for (let c = 0; c < colsT; c++){
-        const x = (c + 0.5) * tCellW + rand(-0.42, 0.42) * tCellW;
-        const y = (r + 0.5) * tCellH + rand(-0.42, 0.42) * tCellH;
-        const delay = reduceMotion ? rand(0, 0.5) : (0.45 + ti * (0.85 / totalT) + rand(0, 0.1));
-        place(x, y, { word: nextWord(), z: zrand(), delay });
-        ti++;
-      }
-    }
-  }
-
-  echoLayer.appendChild(frag);
-
-  // Pop auslösen
-  requestAnimationFrame(() => {
-    echoLayer.querySelectorAll(".echo").forEach(el => el.classList.add("pop"));
-  });
-}
-
-/* ---- Mobile-Variante: drei grosse Fotos nacheinander + gröbere Hintergrundflut ---- */
-function floodMobile(){
-  const reduce = reduceMotion;
-  const vw = innerWidth, vh = innerHeight;
-  const unit = Math.min(vw, vh);
-  const nextWord = makeQueue(STICKER_WORDS);
-  const hasWords = STICKER_WORDS && STICKER_WORDS.length > 0;
-  const zr = () => 1 + Math.floor(Math.random() * 9);
-
-  // Hintergrund: WENIGE, dafür GROSSE Sticker (damit sie auf dem Handy wirken)
-  function fillBackground(){
-    const frag = document.createDocumentFragment();
-    const nextImg = makeQueue(STICKER_IMAGES);
-
-    // Foto-Anker: 2×3 Zonen, gross
-    const colsP = 2, rowsP = 3;
-    const pW = vw / colsP, pH = vh / rowsP;
-    let i = 0;
-    for (let r = 0; r < rowsP; r++){
-      for (let c = 0; c < colsP; c++){
-        const cx = (c + 0.5) * pW + rand(-0.28, 0.28) * pW;
-        const cy = (r + 0.5) * pH + rand(-0.28, 0.28) * pH;
-        const size = Math.min(vw * rand(0.42, 0.58), unit * 0.64);
-        const el = document.createElement("div");
-        el.className = "echo";
-        el.style.left = cx.toFixed(1) + "px";
-        el.style.top  = cy.toFixed(1) + "px";
-        el.style.width = size.toFixed(0) + "px";
-        el.style.height = size.toFixed(0) + "px";
-        el.style.setProperty("--er", rand(-15, 15).toFixed(1) + "deg");
-        el.style.setProperty("--ed", (reduce ? rand(0, 0.4) : (i * 0.12 + rand(0, 0.08))).toFixed(2) + "s");
-        el.style.zIndex = zr();
-        el.innerHTML = stickerMarkup(nextImg());
-        frag.appendChild(el);
-        i++;
-      }
-    }
-
-    // Wort-Tags: wenige, etwas grösser
-    if (hasWords){
-      const tCols = 3, tRows = 4, tW = vw / tCols, tH = vh / tRows;
-      const textNom = Math.max(16, Math.min(unit * 0.07, 30));
-      let ti = 0;
-      for (let r = 0; r < tRows; r++){
-        for (let c = 0; c < tCols; c++){
-          const x = (c + 0.5) * tW + rand(-0.4, 0.4) * tW;
-          const y = (r + 0.5) * tH + rand(-0.4, 0.4) * tH;
-          const el = document.createElement("div");
-          el.className = "echo";
-          el.style.left = x.toFixed(1) + "px";
-          el.style.top  = y.toFixed(1) + "px";
-          el.style.setProperty("--er", rand(-15, 15).toFixed(1) + "deg");
-          el.style.setProperty("--ed", (reduce ? rand(0, 0.4) : (0.4 + ti * 0.08 + rand(0, 0.08))).toFixed(2) + "s");
-          el.style.zIndex = zr();
-          el.innerHTML = textMarkup(nextWord(), textNom);
-          frag.appendChild(el);
-          ti++;
-        }
-      }
-    }
-
-    echoLayer.appendChild(frag);
-    requestAnimationFrame(() => echoLayer.querySelectorAll(".echo").forEach(el => el.classList.add("pop")));
-  }
-
-  // Hero: die drei Victor-Fotos gross, nacheinander, über der Karte
   const layer = document.createElement("div");
-  layer.className = "hero-layer";
-  document.body.appendChild(layer);
-  const pos = [ { l: 40, t: 39, r: -8 }, { l: 61, t: 52, r: 7 }, { l: 45, t: 66, r: -4 } ];
-  const heroes = STICKER_IMAGES.map((src, i) => {
+  layer.className = "edge-layer";
+  layer.setAttribute("aria-hidden", "true");
+
+  const spots = ["s1", "s2", "s3"];   // oben links / mittig links / unten rechts
+  edgeEls = STICKER_IMAGES.slice(0, 3).map((src, i) => {
     const el = document.createElement("div");
-    el.className = "hero-sticker";
-    el.style.left = pos[i % pos.length].l + "%";
-    el.style.top  = pos[i % pos.length].t + "%";
-    el.style.setProperty("--er", pos[i % pos.length].r + "deg");
-    el.style.zIndex = 46 + i;
+    el.className = "edge " + spots[i];
     el.innerHTML = stickerMarkup(src);
     layer.appendChild(el);
     return el;
   });
+  document.body.appendChild(layer);
 
-  if (reduce){
-    heroes.forEach(el => el.classList.add("in"));
-    fillBackground();
-    return;
-  }
+  // gestaffelt hereinfliegen
+  edgeEls.forEach((el, i) => {
+    setTimeout(() => el.classList.add("show"), 40 + (reduceMotion ? 0 : i * 180));
+  });
 
-  // nacheinander gross aufploppen
-  heroes.forEach((el, i) => setTimeout(() => el.classList.add("in"), i * 640));
-  // Hintergrund füllt sich, während die Heroes stehen
-  setTimeout(fillBackground, 720);
-  // nach dem letzten Hero kurz halten, dann schrumpfen/ausblenden → Karte wieder frei
-  const outAt = heroes.length * 640 + 1300;
-  setTimeout(() => heroes.forEach((el, i) => setTimeout(() => el.classList.add("out"), i * 160)), outAt);
-  setTimeout(() => layer.remove(), outAt + heroes.length * 160 + 900);
+  // Scrollrichtung: hochscrollen → raus, runterscrollen → rein
+  let lastY = window.scrollY;
+  addEventListener("scroll", () => {
+    const y = window.scrollY;
+    if (Math.abs(y - lastY) < 6) return;         // Mini-Zittern ignorieren
+    const down = y > lastY;
+    lastY = y;
+    edgeEls.forEach(el => el.classList.toggle("show", down));
+  }, { passive: true });
 }
 
 /* ============================================================
@@ -1204,41 +982,6 @@ giftBtn.addEventListener("click", (e) => attemptOpen(e.detail > 0));
 /* ============================================================
    HELFER
 ============================================================ */
-// Fisher-Yates-Mischung (Kopie)
-function shuffle(a){
-  const arr = a.slice();
-  for (let i = arr.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-// Zyklische Warteschlange: verteilt alle Einträge, bevor sich einer wiederholt
-function makeQueue(arr){
-  let q = [];
-  return () => {
-    if (!arr || !arr.length) return "";
-    if (!q.length) q = shuffle(arr);
-    return q.pop();
-  };
-}
-
-// Markup für einen Text-Sticker (Papier-Aufkleber im Tag-System)
-// base = Nenn-Schriftgrösse; die Tags bleiben bewusst klein (Fotos dominieren)
-function textMarkup(word, base){
-  let fs = base * rand(0.82, 1.22);       // um die Nenngrösse herum variieren
-  if (word.length > 10) fs *= 0.7;        // lange Sprüche kleiner setzen
-  fs = Math.max(12, Math.min(fs, 30));
-  // Akzent-Verteilung: überwiegend greige, nur punktuell Riso/Ink
-  const r = Math.random();
-  let cls = "";
-  if      (r < 0.62) cls = "";
-  else if (r < 0.80) cls = "a-ink";
-  else if (r < 0.91) cls = "a-r1";
-  else               cls = "a-r2";
-  return `<span class="echo-tag ${cls}" style="font-size:${fs.toFixed(1)}px">${escapeHtml(word)}</span>`;
-}
-
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
