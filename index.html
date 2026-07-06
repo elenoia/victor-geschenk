@@ -414,18 +414,21 @@ body::before{
 .edge-layer{ position:fixed; inset:0; z-index:30; pointer-events:none; }
 .edge{
   position:fixed;
-  width:clamp(100px,18vw,180px);
+  width:clamp(84px,20vw,150px);
   aspect-ratio:1/1;
   opacity:0;
   will-change:transform,opacity;
   transition:opacity .4s ease, transform .55s cubic-bezier(.2,1.25,.4,1);
 }
-/* Grundzustand = ausgeblendet (jeweils zur eigenen Kante hinausgeschoben) */
-.edge.s1{ top:0;    left:0;  --vis:translate(-26%,-26%) rotate(-8deg); --hid:translate(-175%,-26%) rotate(-8deg); transform:var(--hid); }
-.edge.s2{ top:50%;  left:0;  --vis:translate(-30%,-50%) rotate(6deg);  --hid:translate(-175%,-50%) rotate(6deg);  transform:var(--hid); }
-.edge.s3{ bottom:0; right:0; --vis:translate(26%,26%)  rotate(-5deg);  --hid:translate(175%,26%)  rotate(-5deg);  transform:var(--hid); }
-/* eingeblendet */
-.edge.show{ opacity:1; transform:var(--vis); }
+/* Fest an den drei Rändern verankert (top/left/bottom/right).
+   Grundzustand = zur eigenen Kante hinausgeschoben, .show holt sie an den Rand
+   (sie ragen leicht über die Kante hinaus, damit kein Text verdeckt wird). */
+.edge.s1{ top:0;    left:0;  --r:-8deg; transform:translate(-175%,-20%) rotate(var(--r)); }
+.edge.s2{ top:50%;  left:0;  --r:6deg;  transform:translate(-175%,-50%) rotate(var(--r)); }
+.edge.s3{ bottom:0; right:0; --r:-5deg; transform:translate(175%,20%)  rotate(var(--r)); }
+.edge.s1.show{ opacity:1; transform:translate(-30%,-20%) rotate(var(--r)); }
+.edge.s2.show{ opacity:1; transform:translate(-32%,-50%) rotate(var(--r)); }
+.edge.s3.show{ opacity:1; transform:translate(30%,20%)  rotate(var(--r)); }
 
 /* ============================================================
    OVERLAYS: Flash + Partikel-Canvas
@@ -477,8 +480,11 @@ body::before{
   .resolve{ transition:opacity .5s ease; transform:none; }
   .hint .arrow{ animation:none; opacity:1; }
   .hint .arrow path{ animation:none; stroke-dashoffset:0; }
-  /* Rand-Sticker ohne Slide: nur ein-/ausblenden an fester Position */
-  .edge{ transition:opacity .3s ease; transform:var(--vis) !important; }
+  /* Rand-Sticker ohne Slide: an ihrer Randposition nur ein-/ausblenden */
+  .edge{ transition:opacity .3s ease; }
+  .edge.s1{ transform:translate(-30%,-20%) rotate(var(--r)); }
+  .edge.s2{ transform:translate(-32%,-50%) rotate(var(--r)); }
+  .edge.s3{ transform:translate(30%,20%)  rotate(var(--r)); }
 }
 </style>
 </head>
