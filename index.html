@@ -205,6 +205,7 @@ body::before{
   box-shadow:5px 6px 0 var(--ink);
 }
 .gift-btn{
+  position:relative;
   appearance:none;
   -webkit-appearance:none;
   border:none;
@@ -216,6 +217,29 @@ body::before{
   outline:none;
   transition:transform .18s ease;
 }
+/* Reaktions-Notiz am Geschenk (wandert per gift-btn-Transform mit) */
+.gift-note{
+  position:absolute;
+  top:-4%;
+  right:-6%;
+  z-index:5;
+  pointer-events:none;
+  font-family:var(--disp);
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:-.01em;
+  font-size:clamp(15px,4.5vw,22px);
+  line-height:1;
+  padding:.34em .6em;
+  background:var(--riso-1);
+  color:var(--paper);
+  border:var(--hair);
+  box-shadow:3px 4px 0 rgba(28,28,26,.22);
+  transform:rotate(7deg) scale(.6);
+  opacity:0;
+  transition:opacity .18s ease, transform .28s cubic-bezier(.2,1.6,.4,1);
+}
+.gift-note.show{ opacity:1; transform:rotate(7deg) scale(1); }
 .gift-btn:hover{ transform:translateY(-3px); }
 .gift-btn:active{ transform:translateY(0) scale(.985); }
 .gift-btn:focus-visible{
@@ -429,6 +453,33 @@ body::before{
 .echo-tag.a-r2 { background:var(--riso-2); color:var(--paper); }
 
 /* ============================================================
+   HERO-STICKER (Mobile: drei grosse Fotos nacheinander über der Karte)
+============================================================ */
+.hero-layer{ position:fixed; inset:0; z-index:46; pointer-events:none; }
+.hero-sticker{
+  position:absolute;
+  width:min(58vw,40vh);
+  aspect-ratio:1/1;
+  transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(.3);
+  opacity:0;
+  transition:opacity .25s ease, transform .5s cubic-bezier(.2,1.7,.4,1);
+}
+.hero-sticker.in{
+  opacity:1;
+  transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(1);
+  animation:hero-wobble 2.4s ease-in-out .5s infinite;
+}
+.hero-sticker.out{
+  opacity:0;
+  transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(.5);
+  animation:none;
+}
+@keyframes hero-wobble{
+  0%,100%{ transform:translate(-50%,-50%) rotate(var(--er)) scale(1); }
+  50%    { transform:translate(-50%,-50%) rotate(calc(var(--er) + 2.5deg)) scale(1.03); }
+}
+
+/* ============================================================
    OVERLAYS: Flash + Partikel-Canvas
 ============================================================ */
 #flash{
@@ -481,6 +532,9 @@ body::before{
   .echo{ transform:translate(-50%,-50%) rotate(var(--er)) scale(1); }
   .hint .arrow{ animation:none; opacity:1; }
   .hint .arrow path{ animation:none; stroke-dashoffset:0; }
+  /* Hero-Sticker ohne Pop/Wackeln – direkt sichtbar */
+  .hero-sticker{ transition:opacity .3s ease; transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(1); }
+  .hero-sticker.in{ animation:none; transform:translate(-50%,-50%) rotate(var(--er,0deg)) scale(1); }
 }
 </style>
 </head>
@@ -532,13 +586,15 @@ body::before{
           </g>
         </svg>
       </span>
+      <!-- Reaktions-Benachrichtigung, wandert mit dem Geschenk mit -->
+      <span class="gift-note" id="giftNote" aria-hidden="true"></span>
     </button>
 
-    <!-- AUFMACHEN-Callout mit Schnörkel-Pfeil aufs Geschenk -->
+    <!-- AUFMACHEN-Callout mit halbrundem Pfeil aufs Geschenk -->
     <div class="hint" id="hint">
       <svg class="arrow" viewBox="0 0 48 56" aria-hidden="true">
-        <path class="shaft" d="M40 52 C 38 41, 27 43, 26 33 A 4 4 0 1 1 33 31 C 32 22, 24 17, 19 7"/>
-        <path class="head" d="M12.5 14 L19 6.5 L26.5 13"/>
+        <path class="shaft" d="M40 50 C 44 36, 22 22, 22 8"/>
+        <path class="head" d="M15 15 L22 6 L29 15"/>
       </svg>
       <span class="tag cta rot-r" style="--rot:3deg">Aufmachen</span>
     </div>
@@ -561,7 +617,7 @@ body::before{
     <section class="resolve card" id="resolve" aria-live="polite">
       <div class="kicker">
         <span class="smiley gold" aria-hidden="true">☺</span>
-        <span class="label">Die Auflösung</span>
+        <span class="label">Dein Geschenk</span>
         <span class="burst" aria-hidden="true">✳</span>
       </div>
 
@@ -570,7 +626,7 @@ body::before{
         <span class="tag riso-2-outline rot-r" style="--rot:3deg">Nichts</span>
       </div>
 
-      <p class="body">Hiermit sei feierlich verkündet: Zwischen uns wird künftig <span class="hl">zu keinem Geburtstag mehr geschenkt</span>. Nie wieder wirst du an einem grauen Novemberabend wach liegen müssen und dich fragen, ob Gregor schon was besorgt hat oder ob Amazon Prime noch rechtzeitig liefern wird: Du bist <span class="hl">von der sozialen Pflicht des Schenkens entbunden</span>. Und dem, was noch viiiiieeeel schwerer wiegt: <span class="hl">Von der Pflicht, darüber nachzudenken</span>. :-D <span class="hl">Happy Platz-im-Kopf-für-Anderes</span>, entgegen sozialer Normen! :-) Fühl dich gedrückt!</p>
+      <p class="body">Hiermit sei feierlich verkündet: <span class="hl">Zwischen uns wird künftig zu keinem Geburtstag mehr geschenkt</span>. Nie wieder wirst du an einem grauen Novemberabend wach liegen müssen und dich fragen, ob Gregor schon was besorgt hat oder ob Amazon Prime noch rechtzeitig liefern wird: <span class="hl">Du bist von der sozialen Pflicht des Schenkens entbunden</span>. Und dem, was noch viiiiieeeel schwerer wiegt: Von der Pflicht, darüber nachzudenken. :-D Happy Platz-im-Kopf-für-Anderes, entgegen sozialer Normen! :-) Fühl dich gedrückt!</p>
 
       <div class="divider" aria-hidden="true">
         <span class="ln"></span><span class="burst">✳</span><span class="smiley">☺</span><span class="burst">✳</span><span class="ln"></span>
@@ -639,16 +695,19 @@ const ctx        = canvas.getContext("2d");
 let opened = false;
 let flooded = false;
 
+// Handy-Erkennung (zur Laufzeit ausgewertet – reagiert auf Drehen/Resize)
+const isPhone = () => window.matchMedia("(max-width: 640px)").matches;
+
 /* ---- Ausweich-Gag: das Geschenk entwischt die ersten Male ---- */
 const isTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 // So oft purzelt es weg, bevor es sich fangen lässt (überall 2, öffnet beim 3. Versuch).
 const DODGE_MAX = reduceMotion ? 0 : 2;
-// Label-Wechsel pro Fehlversuch (kurz & trocken). [0] ist der Startzustand.
-const DODGE_LABELS = ["Aufmachen", "Fast!", "Nein", "Haha"];
+// Reaktions-Notizen, die beim Ausweichen am Geschenk erscheinen (kurz & trocken).
+const DODGE_NOTES = ["Nice try!", "Nein!", "Haha!"];
 let dodges = 0;
 let baseC = null;                       // Ausgangszentrum (Viewport-Koordinaten)
 let curDx = 0, curDy = 0;               // aktueller Versatz vom Ausgangspunkt
-const ctaTag = hint.querySelector(".cta");
+const giftNote = document.getElementById("giftNote");
 
 /* ---- Namen einsetzen (falls gesetzt): Landing-Tag + Titel, Texte bleiben unverändert ---- */
 const nameTag = document.getElementById("nameTag");
@@ -711,6 +770,9 @@ function dodge(){
     const r0 = giftBtn.getBoundingClientRect();      // Ausgangszentrum ohne Sprung-Transform
     baseC = { x: r0.left + r0.width / 2, y: r0.top + r0.height / 2 };
     giftBtn.classList.remove("idle");                // Idle-Schweben stoppen für sauberen Sprung
+    // Pfeil + AUFMACHEN-Callout nach dem ersten Klick ausblenden (Layout bleibt erhalten)
+    hint.style.opacity = "0";
+    hint.style.pointerEvents = "none";
   }
   dodges++;
 
@@ -746,8 +808,9 @@ function dodge(){
 
   curDx = dx; curDy = dy;
 
-  // Callout-Text trocken durchschalten
-  if (ctaTag) ctaTag.textContent = DODGE_LABELS[Math.min(dodges, DODGE_LABELS.length - 1)];
+  // Reaktions-Notiz am Geschenk zeigen/aktualisieren (wandert per Transform mit)
+  giftNote.textContent = DODGE_NOTES[Math.min(dodges - 1, DODGE_NOTES.length - 1)];
+  giftNote.classList.add("show");
 }
 
 // Einstieg: Pointer weicht ggf. aus, Tastatur/Reduced-Motion öffnet direkt
@@ -770,6 +833,8 @@ function openGift(){
   giftBtn.classList.remove("idle");
   giftBtn.setAttribute("aria-disabled", "true");
   hint.style.opacity = "0";
+  hint.style.pointerEvents = "none";
+  giftNote.classList.remove("show");
 
   // Ursprung des Poofs = Mund des Kartons
   const r = giftSvg.getBoundingClientRect();
@@ -805,11 +870,14 @@ function showTeaser(){
   void teaser.offsetWidth;
   requestAnimationFrame(() => teaser.classList.add("on"));
 
-  // Sanft zum Text scrollen (mobil)
-  setTimeout(() => reveal.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"center"}), 120);
+  // Auf dem Handy den Zwischen-Text SELBST mittig in den sichtbaren Bereich holen
+  // (sonst schiebt die hohe – noch unsichtbare – Info-Karte ihn aus dem Viewport).
+  const phone = isPhone();
+  const target = phone ? teaser : reveal;
+  setTimeout(() => target.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"center"}), 120);
 
-  // Dann ploppt die Auflösung auf
-  const wait = reduceMotion ? 900 : 2200;
+  // Spürbare Pause, damit man "Ist das etwa ein… Nichtgeschenk???" lesen kann
+  const wait = reduceMotion ? 900 : (phone ? 2600 : 2200);
   setTimeout(showResolve, wait);
 }
 
@@ -944,56 +1012,80 @@ function floodEcho(){
   if (flooded) return;
   flooded = true;
 
+  // Handy bekommt einen eigenen Moment (grosse Fotos nacheinander + gröbere Flut)
+  if (isPhone()){ floodMobile(); return; }
+
   const vw = innerWidth, vh = innerHeight;
-  const area = vw * vh;
-
-  // Ziel-Anzahl an Bildschirmgröße koppeln (Handy = weniger)
-  let target = Math.round(area / 24000);
-  target = Math.max(24, Math.min(target, reduceMotion ? 42 : 104));
-
-  // Raster mit möglichst quadratischen Zellen, Zellenzahl ~ Ziel
-  const cols = Math.max(3, Math.round(Math.sqrt(target * vw / vh)));
-  const rows = Math.max(3, Math.round(target / cols));
-  const cellW = vw / cols, cellH = vh / rows;
-  const cell  = Math.min(cellW, cellH);
-  const total = cols * rows;
+  const landscape = vw >= vh;
+  const unit = Math.min(vw, vh);
+  const textNom = Math.max(14, Math.min(unit * 0.045, 26));  // Nenngrösse der kleinen Text-Tags
 
   const hasWords = STICKER_WORDS && STICKER_WORDS.length > 0;
-  const nextWord = makeQueue(STICKER_WORDS);   // zyklisch, ohne unmittelbare Wortwiederholung
+  const nextWord = makeQueue(STICKER_WORDS);   // zyklisch, ohne unmittelbare Wiederholung
   const nextImg  = makeQueue(STICKER_IMAGES);
 
   const frag = document.createDocumentFragment();
-  let idx = 0;
+  const zrand = () => 1 + Math.floor(Math.random() * 9);     // gemischter z-index → mal Foto, mal Tag oben
 
-  for (let r = 0; r < rows; r++){
-    for (let c = 0; c < cols; c++){
-      const el = document.createElement("div");
-      el.className = "echo";
+  // ein Echo-Element (Foto oder Wort) platzieren
+  function place(x, y, o){
+    const el = document.createElement("div");
+    el.className = "echo";
+    el.style.left = x.toFixed(1) + "px";
+    el.style.top  = y.toFixed(1) + "px";
+    el.style.setProperty("--er", rand(-15, 15).toFixed(1) + "deg");   // Rotation −15°…+15°
+    el.style.setProperty("--ed", o.delay.toFixed(2) + "s");
+    el.style.zIndex = o.z;
+    if (o.word !== undefined){
+      el.innerHTML = textMarkup(o.word, textNom);
+    } else {
+      el.style.width  = o.size.toFixed(0) + "px";
+      el.style.height = o.size.toFixed(0) + "px";
+      el.innerHTML = stickerMarkup(o.src);
+    }
+    frag.appendChild(el);
+  }
 
-      // Zellzentrum + Jitter (bis ~38% der Zellgröße) → flächig, aber nicht starr
-      const x = (c + 0.5) * cellW + rand(-0.38, 0.38) * cellW;
-      const y = (r + 0.5) * cellH + rand(-0.38, 0.38) * cellH;
-      el.style.left = x.toFixed(1) + "px";
-      el.style.top  = y.toFixed(1) + "px";
-      el.style.setProperty("--er", rand(-8, 8).toFixed(1) + "deg");
+  // ---- 1) Foto-Anker: über Zonen verteilt, ein paar richtig gross ----
+  let colsP = landscape ? (vw > 1100 ? 5 : 4) : 3;
+  let rowsP = landscape ? (vh > 700 ? 3 : 2) : (vh > 780 ? 5 : 4);
+  if (reduceMotion){ colsP = Math.min(colsP, 3); rowsP = Math.min(rowsP, 3); }
+  const pCellW = vw / colsP, pCellH = vh / rowsP;
 
-      // gestaffelt von klein auf gross
-      const delay = reduceMotion ? rand(0, 0.5) : (idx * (1.15 / total) + rand(0, 0.1));
-      el.style.setProperty("--ed", delay.toFixed(2) + "s");
+  const zones = [];
+  for (let r = 0; r < rowsP; r++) for (let c = 0; c < colsP; c++) zones.push([c, r]);
+  // ~28% der Fotos als echte Blickfang-Anker (extra gross)
+  const bigCount = Math.max(1, Math.round(zones.length * 0.28));
+  const bigSet = new Set(shuffle(zones.map((_, i) => i)).slice(0, bigCount));
 
-      // Schachbrett: ausgewogen, nie zwei gleiche Typen direkt nebeneinander
-      const wantWord = hasWords && ((r + c) % 2 === 0);
-      if (wantWord){
-        el.innerHTML = textMarkup(nextWord(), cell);
-      } else {
-        // Fotos moderat kleiner halten, damit sie nicht zu "Matsch" verlaufen
-        const size = Math.max(46, cell * rand(0.5, 0.78));
-        el.style.width  = size.toFixed(0) + "px";
-        el.style.height = size.toFixed(0) + "px";
-        el.innerHTML = stickerMarkup(nextImg());
+  zones.forEach(([c, r], i) => {
+    const cx = (c + 0.5) * pCellW + rand(-0.3, 0.3) * pCellW;
+    const cy = (r + 0.5) * pCellH + rand(-0.3, 0.3) * pCellH;
+    const big = bigSet.has(i);
+    // Fotobreite als Anteil der Viewport-Breite, ~30% kleiner als zuvor
+    let size = vw * (big ? rand(0.32, 0.42) : rand(0.22, 0.32)) * 0.7;
+    size = Math.min(size, unit * (big ? 0.66 : 0.52) * 0.7);          // auf Hochkant nicht sprengen
+    const delay = reduceMotion ? rand(0, 0.4) : (i * (0.7 / zones.length) + rand(0, 0.08));
+    place(cx, cy, { src: nextImg(), size, z: zrand() + (big ? 2 : 0), delay });
+  });
+
+  // ---- 2) Kleine Text-Tags in die Lücken streuen ----
+  if (hasWords){
+    let targetT = Math.round((vw * vh) / 26000);
+    targetT = Math.max(18, Math.min(targetT, reduceMotion ? 30 : 78));
+    const colsT = Math.max(4, Math.round(Math.sqrt(targetT * vw / vh)));
+    const rowsT = Math.max(3, Math.round(targetT / colsT));
+    const tCellW = vw / colsT, tCellH = vh / rowsT;
+    const totalT = colsT * rowsT;
+    let ti = 0;
+    for (let r = 0; r < rowsT; r++){
+      for (let c = 0; c < colsT; c++){
+        const x = (c + 0.5) * tCellW + rand(-0.42, 0.42) * tCellW;
+        const y = (r + 0.5) * tCellH + rand(-0.42, 0.42) * tCellH;
+        const delay = reduceMotion ? rand(0, 0.5) : (0.45 + ti * (0.85 / totalT) + rand(0, 0.1));
+        place(x, y, { word: nextWord(), z: zrand(), delay });
+        ti++;
       }
-      frag.appendChild(el);
-      idx++;
     }
   }
 
@@ -1003,6 +1095,104 @@ function floodEcho(){
   requestAnimationFrame(() => {
     echoLayer.querySelectorAll(".echo").forEach(el => el.classList.add("pop"));
   });
+}
+
+/* ---- Mobile-Variante: drei grosse Fotos nacheinander + gröbere Hintergrundflut ---- */
+function floodMobile(){
+  const reduce = reduceMotion;
+  const vw = innerWidth, vh = innerHeight;
+  const unit = Math.min(vw, vh);
+  const nextWord = makeQueue(STICKER_WORDS);
+  const hasWords = STICKER_WORDS && STICKER_WORDS.length > 0;
+  const zr = () => 1 + Math.floor(Math.random() * 9);
+
+  // Hintergrund: WENIGE, dafür GROSSE Sticker (damit sie auf dem Handy wirken)
+  function fillBackground(){
+    const frag = document.createDocumentFragment();
+    const nextImg = makeQueue(STICKER_IMAGES);
+
+    // Foto-Anker: 2×3 Zonen, gross
+    const colsP = 2, rowsP = 3;
+    const pW = vw / colsP, pH = vh / rowsP;
+    let i = 0;
+    for (let r = 0; r < rowsP; r++){
+      for (let c = 0; c < colsP; c++){
+        const cx = (c + 0.5) * pW + rand(-0.28, 0.28) * pW;
+        const cy = (r + 0.5) * pH + rand(-0.28, 0.28) * pH;
+        const size = Math.min(vw * rand(0.42, 0.58), unit * 0.64);
+        const el = document.createElement("div");
+        el.className = "echo";
+        el.style.left = cx.toFixed(1) + "px";
+        el.style.top  = cy.toFixed(1) + "px";
+        el.style.width = size.toFixed(0) + "px";
+        el.style.height = size.toFixed(0) + "px";
+        el.style.setProperty("--er", rand(-15, 15).toFixed(1) + "deg");
+        el.style.setProperty("--ed", (reduce ? rand(0, 0.4) : (i * 0.12 + rand(0, 0.08))).toFixed(2) + "s");
+        el.style.zIndex = zr();
+        el.innerHTML = stickerMarkup(nextImg());
+        frag.appendChild(el);
+        i++;
+      }
+    }
+
+    // Wort-Tags: wenige, etwas grösser
+    if (hasWords){
+      const tCols = 3, tRows = 4, tW = vw / tCols, tH = vh / tRows;
+      const textNom = Math.max(16, Math.min(unit * 0.07, 30));
+      let ti = 0;
+      for (let r = 0; r < tRows; r++){
+        for (let c = 0; c < tCols; c++){
+          const x = (c + 0.5) * tW + rand(-0.4, 0.4) * tW;
+          const y = (r + 0.5) * tH + rand(-0.4, 0.4) * tH;
+          const el = document.createElement("div");
+          el.className = "echo";
+          el.style.left = x.toFixed(1) + "px";
+          el.style.top  = y.toFixed(1) + "px";
+          el.style.setProperty("--er", rand(-15, 15).toFixed(1) + "deg");
+          el.style.setProperty("--ed", (reduce ? rand(0, 0.4) : (0.4 + ti * 0.08 + rand(0, 0.08))).toFixed(2) + "s");
+          el.style.zIndex = zr();
+          el.innerHTML = textMarkup(nextWord(), textNom);
+          frag.appendChild(el);
+          ti++;
+        }
+      }
+    }
+
+    echoLayer.appendChild(frag);
+    requestAnimationFrame(() => echoLayer.querySelectorAll(".echo").forEach(el => el.classList.add("pop")));
+  }
+
+  // Hero: die drei Victor-Fotos gross, nacheinander, über der Karte
+  const layer = document.createElement("div");
+  layer.className = "hero-layer";
+  document.body.appendChild(layer);
+  const pos = [ { l: 40, t: 39, r: -8 }, { l: 61, t: 52, r: 7 }, { l: 45, t: 66, r: -4 } ];
+  const heroes = STICKER_IMAGES.map((src, i) => {
+    const el = document.createElement("div");
+    el.className = "hero-sticker";
+    el.style.left = pos[i % pos.length].l + "%";
+    el.style.top  = pos[i % pos.length].t + "%";
+    el.style.setProperty("--er", pos[i % pos.length].r + "deg");
+    el.style.zIndex = 46 + i;
+    el.innerHTML = stickerMarkup(src);
+    layer.appendChild(el);
+    return el;
+  });
+
+  if (reduce){
+    heroes.forEach(el => el.classList.add("in"));
+    fillBackground();
+    return;
+  }
+
+  // nacheinander gross aufploppen
+  heroes.forEach((el, i) => setTimeout(() => el.classList.add("in"), i * 640));
+  // Hintergrund füllt sich, während die Heroes stehen
+  setTimeout(fillBackground, 720);
+  // nach dem letzten Hero kurz halten, dann schrumpfen/ausblenden → Karte wieder frei
+  const outAt = heroes.length * 640 + 1300;
+  setTimeout(() => heroes.forEach((el, i) => setTimeout(() => el.classList.add("out"), i * 160)), outAt);
+  setTimeout(() => layer.remove(), outAt + heroes.length * 160 + 900);
 }
 
 /* ============================================================
@@ -1034,10 +1224,11 @@ function makeQueue(arr){
 }
 
 // Markup für einen Text-Sticker (Papier-Aufkleber im Tag-System)
+// base = Nenn-Schriftgrösse; die Tags bleiben bewusst klein (Fotos dominieren)
 function textMarkup(word, base){
-  let fs = base * rand(0.18, 0.30);       // moderater Grössenbereich
-  if (word.length > 10) fs *= 0.6;        // lange Sprüche kleiner setzen
-  fs = Math.max(13, Math.min(fs, 34));
+  let fs = base * rand(0.82, 1.22);       // um die Nenngrösse herum variieren
+  if (word.length > 10) fs *= 0.7;        // lange Sprüche kleiner setzen
+  fs = Math.max(12, Math.min(fs, 30));
   // Akzent-Verteilung: überwiegend greige, nur punktuell Riso/Ink
   const r = Math.random();
   let cls = "";
