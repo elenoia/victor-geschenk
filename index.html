@@ -217,13 +217,15 @@ body::before{
   outline:none;
   transition:transform .18s ease;
 }
-/* Reaktions-Notiz am Geschenk (wandert per gift-btn-Transform mit) */
+/* Reaktions-Notiz UNTERHALB des Geschenks (wandert per gift-btn-Transform mit).
+   So bleibt die HAPPY-BIRTHDAY-Headline oben immer frei. */
 .gift-note{
   position:absolute;
-  top:-4%;
-  right:-6%;
+  top:calc(100% + 10px);
+  left:50%;
   z-index:5;
   pointer-events:none;
+  white-space:nowrap;
   font-family:var(--disp);
   font-weight:900;
   text-transform:uppercase;
@@ -235,11 +237,12 @@ body::before{
   color:var(--paper);
   border:var(--hair);
   box-shadow:3px 4px 0 rgba(28,28,26,.22);
-  transform:rotate(7deg) scale(.6);
+  transform-origin:top center;
+  transform:translateX(-50%) rotate(-3deg) scale(.6);
   opacity:0;
   transition:opacity .18s ease, transform .28s cubic-bezier(.2,1.6,.4,1);
 }
-.gift-note.show{ opacity:1; transform:rotate(7deg) scale(1); }
+.gift-note.show{ opacity:1; transform:translateX(-50%) rotate(-3deg) scale(1); }
 .gift-btn:hover{ transform:translateY(-3px); }
 .gift-btn:active{ transform:translateY(0) scale(.985); }
 .gift-btn:focus-visible{
@@ -429,6 +432,10 @@ body::before{
 .edge.s1.show{ opacity:1; transform:translate(-30%,-20%) rotate(var(--r)); }
 .edge.s2.show{ opacity:1; transform:translate(-32%,-50%) rotate(var(--r)); }
 .edge.s3.show{ opacity:1; transform:translate(30%,20%)  rotate(var(--r)); }
+/* Mobil: deutlich grösser (~42% Viewport-Breite), damit sie nicht untergehen. Desktop unverändert. */
+@media (max-width:640px){
+  .edge{ width:clamp(130px,42vw,200px); }
+}
 
 /* ============================================================
    OVERLAYS: Flash + Partikel-Canvas
