@@ -412,30 +412,28 @@ body::before{
 }
 
 /* ============================================================
-   RAND-STICKER (drei fixierte Fotos an den Rändern, scroll-reaktiv)
+   FOTO-COLLAGE (drei Sticker als Kopf der Auflösungs-Karte)
 ============================================================ */
-.edge-layer{ position:fixed; inset:0; z-index:30; pointer-events:none; }
-.edge{
-  position:fixed;
-  width:clamp(84px,20vw,150px);
+.photo-cluster{
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  margin:-52px auto 18px;      /* ragt über die Kartenoberkante */
+  position:relative;
+  z-index:3;
+}
+.photo-cluster .pc{
+  width:clamp(84px,25vw,120px);
   aspect-ratio:1/1;
+  flex:0 0 auto;
   opacity:0;
-  will-change:transform,opacity;
-  transition:opacity .4s ease, transform .55s cubic-bezier(.2,1.25,.4,1);
+  transform:rotate(var(--pcr,0deg)) scale(.5);
+  transition:opacity .35s ease, transform .5s cubic-bezier(.2,1.6,.4,1);
 }
-/* Fest an den drei Rändern verankert (top/left/bottom/right).
-   Grundzustand = zur eigenen Kante hinausgeschoben, .show holt sie an den Rand
-   (sie ragen leicht über die Kante hinaus, damit kein Text verdeckt wird). */
-.edge.s1{ top:0;    left:0;  --r:-8deg; transform:translate(-175%,-20%) rotate(var(--r)); }
-.edge.s2{ top:50%;  left:0;  --r:6deg;  transform:translate(-175%,-50%) rotate(var(--r)); }
-.edge.s3{ bottom:0; right:0; --r:-5deg; transform:translate(175%,20%)  rotate(var(--r)); }
-.edge.s1.show{ opacity:1; transform:translate(-30%,-20%) rotate(var(--r)); }
-.edge.s2.show{ opacity:1; transform:translate(-32%,-50%) rotate(var(--r)); }
-.edge.s3.show{ opacity:1; transform:translate(30%,20%)  rotate(var(--r)); }
-/* Mobil: deutlich grösser (~42% Viewport-Breite), damit sie nicht untergehen. Desktop unverändert. */
-@media (max-width:640px){
-  .edge{ width:clamp(130px,42vw,200px); }
-}
+.photo-cluster .pc1{ --pcr:-8deg; margin-right:-16px; }
+.photo-cluster .pc2{ --pcr:4deg;  z-index:2; transition-delay:.1s; }
+.photo-cluster .pc3{ --pcr:-6deg; margin-left:-16px; transition-delay:.2s; }
+.photo-cluster.in .pc{ opacity:1; transform:rotate(var(--pcr,0deg)) scale(1); }
 
 /* ============================================================
    OVERLAYS: Flash + Partikel-Canvas
@@ -487,11 +485,9 @@ body::before{
   .resolve{ transition:opacity .5s ease; transform:none; }
   .hint .arrow{ animation:none; opacity:1; }
   .hint .arrow path{ animation:none; stroke-dashoffset:0; }
-  /* Rand-Sticker ohne Slide: an ihrer Randposition nur ein-/ausblenden */
-  .edge{ transition:opacity .3s ease; }
-  .edge.s1{ transform:translate(-30%,-20%) rotate(var(--r)); }
-  .edge.s2{ transform:translate(-32%,-50%) rotate(var(--r)); }
-  .edge.s3{ transform:translate(30%,20%)  rotate(var(--r)); }
+  /* Foto-Collage ohne Pop: nur ein-/ausblenden an fester Position */
+  .photo-cluster .pc{ transition:opacity .3s ease; transform:rotate(var(--pcr,0deg)); }
+  .photo-cluster.in .pc{ transform:rotate(var(--pcr,0deg)); }
 }
 </style>
 </head>
@@ -569,6 +565,9 @@ body::before{
 
     <!-- Schritt 4: Auflösung -->
     <section class="resolve card" id="resolve" aria-live="polite">
+      <!-- Foto-Collage als Kartenkopf (per JS befüllt) -->
+      <div class="photo-cluster" id="photoCluster" aria-hidden="true"></div>
+
       <div class="kicker">
         <span class="smiley gold" aria-hidden="true">☺</span>
         <span class="label">Dein Geschenk</span>
@@ -826,8 +825,8 @@ function showResolve(){
   resolve.classList.add("on");
   setTimeout(() => resolve.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"center"}), 260);
 
-  // Kurzer Beat, dann kommen die drei Rand-Sticker herein
-  setTimeout(showEdgeStickers, reduceMotion ? 700 : 1500);
+  // Kurzer Beat, dann ploppt die Foto-Collage oben auf der Karte auf
+  setTimeout(showPhotoCluster, reduceMotion ? 500 : 900);
 }
 
 /* ============================================================
@@ -947,43 +946,18 @@ function tick(){
 }
 
 /* ============================================================
-   SCHRITT 5: RAND-STICKER (nach dem Öffnen, scroll-reaktiv)
-   oben links / mittig links / unten rechts – kein Text wird verdeckt.
-   Hochscrollen → raus, Runterscrollen → rein.
+   SCHRITT 5: FOTO-COLLAGE als Kartenkopf (nach dem Öffnen)
 ============================================================ */
-let edgeEls = [];
-function showEdgeStickers(){
+const photoCluster = document.getElementById("photoCluster");
+// einmal befüllen: drei Foto-Sticker, leicht überlappend/schräg
+photoCluster.innerHTML = STICKER_IMAGES.slice(0, 3).map((src, i) =>
+  `<div class="pc pc${i + 1}">${stickerMarkup(src)}</div>`
+).join("");
+
+function showPhotoCluster(){
   if (flooded) return;      // einmalig
   flooded = true;
-
-  const layer = document.createElement("div");
-  layer.className = "edge-layer";
-  layer.setAttribute("aria-hidden", "true");
-
-  const spots = ["s1", "s2", "s3"];   // oben links / mittig links / unten rechts
-  edgeEls = STICKER_IMAGES.slice(0, 3).map((src, i) => {
-    const el = document.createElement("div");
-    el.className = "edge " + spots[i];
-    el.innerHTML = stickerMarkup(src);
-    layer.appendChild(el);
-    return el;
-  });
-  document.body.appendChild(layer);
-
-  // gestaffelt hereinfliegen
-  edgeEls.forEach((el, i) => {
-    setTimeout(() => el.classList.add("show"), 40 + (reduceMotion ? 0 : i * 180));
-  });
-
-  // Scrollrichtung: hochscrollen → raus, runterscrollen → rein
-  let lastY = window.scrollY;
-  addEventListener("scroll", () => {
-    const y = window.scrollY;
-    if (Math.abs(y - lastY) < 6) return;         // Mini-Zittern ignorieren
-    const down = y > lastY;
-    lastY = y;
-    edgeEls.forEach(el => el.classList.toggle("show", down));
-  }, { passive: true });
+  photoCluster.classList.add("in");
 }
 
 /* ============================================================
