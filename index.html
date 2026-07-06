@@ -1,0 +1,1059 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Ein Nicht-Geschenk</title>
+
+<!-- ============================================================
+     GOOGLE FONTS
+     Display : Archivo (800/900) + Space Grotesk (700)
+     Mono    : Space Mono (400/700)
+============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Space+Grotesk:wght@700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   TOKENS
+============================================================ */
+:root{
+  --paper:  #E7E4DB;   /* warmer greige Grundton                 */
+  --panel:  #D8D5CB;   /* dunklere Blöcke/Flächen                */
+  --ink:    #1C1C1A;   /* fast-schwarz, Text & Linien            */
+  --tag:    #EDEBE4;   /* heller Ton für Sticker-Tags            */
+  --riso-1: #E8483C;   /* Riso-Vermillon – Hauptakzent           */
+  --riso-2: #1E63C4;   /* Riso-Blau      – Zweitakzent           */
+  --riso-3: #F5B400;   /* Marigold       – nur Smileys/Asterisks */
+
+  --hair: 1px solid var(--ink);
+  --disp: "Archivo","Space Grotesk","Arial Narrow",sans-serif;
+  --mono: "Space Mono","IBM Plex Mono",ui-monospace,"Courier New",monospace;
+}
+
+/* ============================================================
+   RESET / BASIS
+============================================================ */
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--mono);
+  color:var(--ink);
+  background:var(--paper);
+  min-height:100dvh;
+  line-height:1.5;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* dezente Zine-Textur: feine Rasterlinien */
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.35;
+  background-image:
+    linear-gradient(to right, rgba(28,28,26,.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(28,28,26,.05) 1px, transparent 1px);
+  background-size:34px 34px;
+}
+
+/* ============================================================
+   LAYOUT
+============================================================ */
+.stage{
+  position:relative;
+  z-index:2;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(20px,5vw,40px);
+  padding:clamp(22px,6vw,56px) clamp(18px,5vw,44px);
+  padding-top:max(clamp(22px,6vw,56px), env(safe-area-inset-top));
+  padding-bottom:max(clamp(22px,6vw,56px), env(safe-area-inset-bottom));
+  text-align:center;
+}
+.stage.shake{ animation:shake .5s cubic-bezier(.36,.07,.19,.97) both; }
+
+/* ============================================================
+   SIGNATUR-ELEMENTE
+============================================================ */
+
+/* Sticker-Tag: Wort auf Papier-Aufkleber, leicht schräg */
+.tag{
+  display:inline-block;
+  background:var(--tag);
+  border:var(--hair);
+  padding:.32em .7em;
+  box-shadow:2px 3px 0 rgba(28,28,26,.14);
+  transform:rotate(var(--rot,-3deg));
+  line-height:1;
+}
+.tag.rot-l{ --rot:-5deg; }
+.tag.rot-r{ --rot: 4deg; }
+.tag.riso-1{ background:var(--riso-1); color:var(--paper); border-color:var(--ink); }
+.tag.riso-2-outline{ box-shadow:2px 3px 0 rgba(28,28,26,.14); border:2px solid var(--riso-2); }
+
+/* Label – Mono, gesperrt, Grossbuchstaben */
+.label{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+}
+
+/* Smiley-Marke ☺ im dünnen Kreis */
+.smiley{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:1.7em; height:1.7em;
+  border:var(--hair);
+  border-radius:50%;
+  font-size:.9em;
+  line-height:1;
+  vertical-align:middle;
+}
+.smiley.gold{ color:var(--riso-3); }
+
+/* Asterisk-/Burst-Marke */
+.burst{ color:var(--riso-2); font-weight:700; }
+
+/* Unterstrich-Akzent für einzelne Wörter (Mono-Anmutung) */
+.uline{
+  text-decoration:underline;
+  text-decoration-color:var(--riso-2);
+  text-decoration-thickness:.09em;
+  text-underline-offset:.16em;
+}
+
+/* Karten mit gestricheltem Haarrahmen statt Schlagschatten */
+.card{
+  position:relative;
+  width:100%;
+  max-width:560px;
+  margin:0 auto;
+  background:var(--paper);
+  border:1.5px dashed var(--ink);
+  padding:clamp(22px,6vw,40px);
+}
+.card::after{ /* feiner Doppelrahmen */
+  content:"";
+  position:absolute; inset:6px;
+  border:var(--hair);
+  opacity:.28;
+  pointer-events:none;
+}
+
+/* Headline-Wörter auf Tags */
+.display{
+  font-family:var(--disp);
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:-.02em;
+  line-height:.92;
+}
+
+/* Textmarker-Highlight für Schlüsselstellen im Fliesstext */
+.hl{
+  background-image:linear-gradient(180deg,
+    transparent 56%, rgba(245,180,0,.5) 56%, rgba(245,180,0,.5) 94%, transparent 94%);
+  padding:0 .08em;
+  font-weight:700;
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+
+/* ============================================================
+   GESCHENK / STARTSCREEN
+============================================================ */
+.gift-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:clamp(18px,4vw,26px);
+}
+
+/* Landing-Headline: HAPPY BIRTHDAY + Name */
+.landing-head{
+  display:flex; flex-direction:column; align-items:center; gap:0;
+  margin-bottom:clamp(2px,2vw,10px);
+}
+.landing-head .kicker{ margin-bottom:14px; }
+.hb-tag{
+  font-family:var(--disp); font-weight:900;
+  text-transform:uppercase; letter-spacing:-.03em; line-height:.84;
+  font-size:clamp(34px,10.5vw,66px);
+  padding:.16em .42em;
+  transform:rotate(-3deg);
+  box-shadow:6px 7px 0 rgba(28,28,26,.18);
+}
+.name-tag{
+  font-family:var(--disp); font-weight:900;
+  text-transform:uppercase; letter-spacing:.01em; line-height:.9;
+  font-size:clamp(22px,6.5vw,42px);
+  margin-top:-6px; z-index:2;
+  transform:rotate(2.5deg);
+  background:var(--riso-1); color:var(--paper); border-color:var(--ink);
+  box-shadow:5px 6px 0 var(--ink);
+}
+.gift-btn{
+  appearance:none;
+  -webkit-appearance:none;
+  border:none;
+  background:transparent;
+  padding:0;
+  margin:0;
+  cursor:pointer;
+  border-radius:14px;
+  outline:none;
+  transition:transform .18s ease;
+}
+.gift-btn:hover{ transform:translateY(-3px); }
+.gift-btn:active{ transform:translateY(0) scale(.985); }
+.gift-btn:focus-visible{
+  outline:2.5px solid var(--riso-2);
+  outline-offset:8px;
+}
+/* schwebender Wrapper – trägt die Idle-Animation, hält Tilt/Hover konfliktfrei */
+.gift-float{ display:inline-block; }
+.gift-btn.idle .gift-float{ animation:gv-idle 4.2s ease-in-out infinite; }
+@keyframes gv-idle{
+  0%   { transform:translateY(0)    rotate(0); }
+  22%  { transform:translateY(-8px) rotate(-1.4deg); }
+  45%  { transform:translateY(0)    rotate(0); }
+  100% { transform:translateY(0)    rotate(0); }
+}
+
+/* Flaches Paket im Sticker-Look: weisser Rand + weicher Schatten, leicht schräg */
+.gift-svg{
+  display:block;
+  width:clamp(196px,56vw,280px);
+  height:auto;
+  overflow:visible;
+  transform:rotate(-3.5deg);
+  filter:
+    drop-shadow( 2.4px 0 0 #fff) drop-shadow(-2.4px 0 0 #fff)
+    drop-shadow(0  2.4px 0 #fff) drop-shadow(0 -2.4px 0 #fff)
+    drop-shadow( 1.8px 1.8px 0 #fff) drop-shadow(-1.8px 1.8px 0 #fff)
+    drop-shadow( 1.8px -1.8px 0 #fff) drop-shadow(-1.8px -1.8px 0 #fff)
+    drop-shadow(0 8px 10px rgba(28,28,26,.26));
+}
+/* Deckel + Schleife fliegen weg */
+#lid{ transform-box:fill-box; transform-origin:50% 100%; transition:transform .6s cubic-bezier(.34,1.25,.5,1), opacity .55s ease .2s; }
+.gift-svg.open #lid{ transform:translate(6px,-104px) rotate(-15deg); opacity:0; }
+/* Karton drückt beim Öffnen kurz an */
+#giftBody{ transform-box:fill-box; transform-origin:50% 100%; transition:transform .5s cubic-bezier(.5,-.2,.3,1.3); }
+.gift-svg.open #giftBody{ transform:scale(1.04,.94); }
+.gift-svg .interior{ opacity:0; transition:opacity .3s ease .14s; }
+.gift-svg.open .interior{ opacity:1; }
+
+.hint{
+  display:inline-flex;
+  align-items:center;
+  gap:.7em;
+  transition:opacity .3s ease;
+}
+.hint .arrow{ width:40px; height:47px; animation:arrowFade 3.6s ease-in-out infinite; }
+.hint .arrow path{
+  fill:none; stroke:var(--riso-1); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round;
+  stroke-dasharray:var(--len,120); stroke-dashoffset:var(--len,120);
+  animation:draw 3.6s ease-in-out infinite;
+}
+.hint .arrow path.head{ animation-name:drawhead; }
+/* zeichnet den Weg zum Geschenk, hält kurz, blendet aus und beginnt von vorn */
+@keyframes arrowFade{ 0%{opacity:0} 12%{opacity:1} 82%{opacity:1} 96%{opacity:0} 100%{opacity:0} }
+@keyframes draw{     0%{stroke-dashoffset:var(--len,120)} 40%{stroke-dashoffset:0} 100%{stroke-dashoffset:0} }
+@keyframes drawhead{ 0%,30%{stroke-dashoffset:var(--len,40)} 50%{stroke-dashoffset:0} 100%{stroke-dashoffset:0} }
+.hint .cta{
+  font-family:var(--disp); font-weight:900;
+  text-transform:uppercase; letter-spacing:.01em;
+  font-size:clamp(15px,4vw,19px);
+}
+
+/* kleines LEER-Tag am Karton nach dem Öffnen */
+.empty-note{
+  margin-top:6px;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .4s ease, transform .4s ease;
+}
+.empty-note.on{ opacity:1; transform:none; }
+
+/* ============================================================
+   TEXT-SEQUENZ
+============================================================ */
+.reveal{
+  width:100%;
+  max-width:620px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:clamp(22px,6vw,38px);
+}
+
+/* Schritt 3 – Teaser steigt langsam auf, gestapelt */
+.teaser{
+  opacity:0;
+  transform:translateY(46px);
+  transition:opacity 1.4s ease, transform 1.5s cubic-bezier(.2,.7,.2,1);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0;
+  margin:0;
+}
+.teaser.on{ opacity:1; transform:none; }
+.teaser .tag{
+  font-family:var(--disp); font-weight:900;
+  text-transform:uppercase; letter-spacing:-.02em; line-height:.92;
+  box-shadow:5px 6px 0 rgba(28,28,26,.18);
+}
+.teaser .t1{ font-size:clamp(24px,7vw,42px); }
+.teaser .t3{ font-size:clamp(26px,7.5vw,46px); margin-top:12px; box-shadow:6px 7px 0 var(--ink); }
+
+/* Schritt 4 – Auflösung ploppt auf */
+.resolve{
+  opacity:0;
+  transform:scale(.86);
+  transition:opacity .28s ease, transform .42s cubic-bezier(.2,1.5,.4,1);
+}
+.resolve.on{ opacity:1; transform:none; }
+
+.resolve .kicker{
+  display:flex; align-items:center; justify-content:center;
+  gap:10px; flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.resolve .headline{
+  display:flex; flex-wrap:wrap; gap:10px 12px; justify-content:center;
+  margin-bottom:22px;
+}
+.resolve .headline{ flex-direction:column; align-items:center; gap:0; }
+.resolve .headline .tag{
+  font-family:var(--disp); font-weight:900;
+  font-size:clamp(38px,11vw,62px);
+  text-transform:uppercase; letter-spacing:-.02em; line-height:.9;
+  box-shadow:5px 6px 0 rgba(28,28,26,.2);
+}
+.resolve .headline .tag:last-child{ margin-top:-6px; z-index:2; }
+.resolve .body{
+  font-family:var(--mono);
+  font-size:clamp(14px,3.6vw,16px);
+  line-height:1.65;
+  max-width:44ch;
+  margin:0 auto 8px;
+}
+.resolve .body .uline{ font-weight:700; }
+.resolve .divider{
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  margin:22px 0 6px; opacity:.9;
+}
+.resolve .divider .ln{ flex:1; border-top:var(--hair); opacity:.4; max-width:90px; }
+
+/* ============================================================
+   STICKER (Aufkleber-Look)
+============================================================ */
+/* weisser Rand + weicher Schatten, damit simple PNGs wie Aufkleber wirken */
+.sticker-media{
+  display:block;
+  width:100%; height:100%;
+  object-fit:contain;
+  filter:
+    drop-shadow( 1.6px 0 0 #fff) drop-shadow(-1.6px 0 0 #fff)
+    drop-shadow(0  1.6px 0 #fff) drop-shadow(0 -1.6px 0 #fff)
+    drop-shadow( 1.2px 1.2px 0 #fff) drop-shadow(-1.2px 1.2px 0 #fff)
+    drop-shadow( 1.2px -1.2px 0 #fff) drop-shadow(-1.2px -1.2px 0 #fff)
+    drop-shadow(0 5px 6px rgba(28,28,26,.34));
+}
+/* Graustufen-Disziplin (per Konstante abschaltbar) */
+.sticker-media.gray{ filter:
+    grayscale(1) contrast(1.02)
+    drop-shadow( 1.6px 0 0 #fff) drop-shadow(-1.6px 0 0 #fff)
+    drop-shadow(0  1.6px 0 #fff) drop-shadow(0 -1.6px 0 #fff)
+    drop-shadow( 1.2px 1.2px 0 #fff) drop-shadow(-1.2px 1.2px 0 #fff)
+    drop-shadow( 1.2px -1.2px 0 #fff) drop-shadow(-1.2px -1.2px 0 #fff)
+    drop-shadow(0 5px 6px rgba(28,28,26,.34));
+}
+
+/* ============================================================
+   ECHO-FLUT
+============================================================ */
+#echoLayer{
+  position:fixed; inset:0;
+  z-index:1;               /* hinter dem Inhalt (stage z-index:2) */
+  overflow:hidden;
+  pointer-events:none;
+}
+.echo{
+  position:absolute;
+  transform:translate(-50%,-50%) rotate(var(--er)) scale(0);
+  opacity:0;
+  will-change:transform,opacity;
+}
+.echo.pop{
+  animation:echoPop .5s cubic-bezier(.2,1.5,.35,1) forwards;
+  animation-delay:var(--ed,0s);
+}
+@keyframes echoPop{
+  0%  { transform:translate(-50%,-50%) rotate(var(--er)) scale(0);   opacity:0; }
+  62% { transform:translate(-50%,-50%) rotate(var(--er)) scale(1.14); opacity:1; }
+  100%{ transform:translate(-50%,-50%) rotate(var(--er)) scale(1);    opacity:1; }
+}
+
+/* Text-Sticker in der Flut – Wörter auf Papier-Aufklebern */
+.echo-tag{
+  display:inline-block;
+  font-family:var(--disp);
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:-.01em;
+  line-height:1;
+  padding:.3em .6em;
+  background:var(--tag);
+  color:var(--ink);
+  border:1.6px solid var(--ink);
+  box-shadow:2px 3px 0 rgba(28,28,26,.2);
+  white-space:nowrap;
+}
+.echo-tag.a-ink{ background:var(--ink);    color:var(--paper); }
+.echo-tag.a-r1 { background:var(--riso-1); color:var(--paper); }
+.echo-tag.a-r2 { background:var(--riso-2); color:var(--paper); }
+
+/* ============================================================
+   OVERLAYS: Flash + Partikel-Canvas
+============================================================ */
+#flash{
+  position:fixed; inset:0;
+  z-index:40;
+  background:#fff;
+  opacity:0;
+  pointer-events:none;
+}
+#poof{
+  position:fixed; inset:0;
+  z-index:30;
+  pointer-events:none;
+}
+
+/* ============================================================
+   SICHTBARKEIT / SCHRITTE
+============================================================ */
+[hidden]{ display:none !important; }
+
+/* ============================================================
+   ANIMATION-KEYFRAMES
+============================================================ */
+@keyframes shake{
+  10%,90%{ transform:translate(-1px,0); }
+  20%,80%{ transform:translate(2px,0); }
+  30%,50%,70%{ transform:translate(-4px,0); }
+  40%,60%{ transform:translate(4px,0); }
+}
+
+/* ============================================================
+   RESPONSIV
+============================================================ */
+@media (max-width:520px){
+  .card::after{ inset:5px; }
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+@media (prefers-reduced-motion:reduce){
+  .gift-btn, .gift-btn:hover, .gift-btn:active{ transition:none; transform:none; }
+  .gift-btn.idle .gift-float{ animation:none; }
+  #lid{ transition:transform .01s linear; }
+  .stage.shake{ animation:none; }
+  .teaser{ transition:opacity .5s ease; transform:none; }
+  .resolve{ transition:opacity .5s ease; transform:none; }
+  .echo.pop{ animation:echoFade .4s ease forwards; animation-delay:var(--ed,0s); }
+  @keyframes echoFade{ from{opacity:0} to{opacity:1} }
+  .echo{ transform:translate(-50%,-50%) rotate(var(--er)) scale(1); }
+  .hint .arrow{ animation:none; opacity:1; }
+  .hint .arrow path{ animation:none; stroke-dashoffset:0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Echo-Hintergrundschicht (wird per JS geflutet) -->
+<div id="echoLayer" aria-hidden="true"></div>
+
+<main class="stage" id="stage">
+
+  <!-- ============ SCHRITT 1: STARTSCREEN ============ -->
+  <div class="gift-wrap" id="startScreen">
+    <!-- Landing-Headline -->
+    <div class="landing-head">
+      <span class="label kicker" style="opacity:.7;letter-spacing:.34em">Für dich</span>
+      <span class="tag hb-tag">Happy Birthday,</span>
+      <span class="tag name-tag" id="nameTag" hidden></span>
+    </div>
+
+    <button class="gift-btn idle" id="giftBtn" aria-label="Geschenk öffnen">
+      <span class="gift-float">
+        <!-- Flaches Collage-Paket: Ink-Kontur, Kraftpapier, Riso-Rot-Band -->
+        <svg class="gift-svg" id="giftSvg" viewBox="0 0 240 240" role="img" aria-hidden="true">
+          <!-- Karton-Korpus -->
+          <g id="giftBody">
+            <rect x="46" y="106" width="148" height="100" rx="6" fill="#D7D3C7" stroke="#1C1C1A" stroke-width="2.6"/>
+            <!-- Kraftpapier-Textur: dünne Faltlinie -->
+            <line x1="46" y1="132" x2="194" y2="132" stroke="#1C1C1A" stroke-width="1" opacity=".14"/>
+            <!-- Bänderkreuz in Riso-Rot -->
+            <rect x="46" y="142" width="148" height="26" fill="#E8483C" stroke="#1C1C1A" stroke-width="2.4"/>
+            <rect x="106" y="106" width="28" height="100" fill="#E8483C" stroke="#1C1C1A" stroke-width="2.4"/>
+          </g>
+
+          <!-- Innenraum – erst nach dem Öffnen sichtbar -->
+          <g class="interior">
+            <rect x="49" y="108" width="142" height="20" rx="4" fill="#1C1C1A"/>
+            <rect x="54" y="122" width="132" height="5" fill="#3a372d"/>
+          </g>
+
+          <!-- Deckel + flache Schleife (fliegt weg) -->
+          <g id="lid">
+            <rect x="40" y="88" width="160" height="26" rx="5" fill="#E1DCCF" stroke="#1C1C1A" stroke-width="2.6"/>
+            <rect x="106" y="88" width="28" height="26" fill="#E8483C" stroke="#1C1C1A" stroke-width="2.4"/>
+            <!-- flache Schleifen-Loops -->
+            <path d="M120 88 L92 66 Q84 61 87 73 L97 90 Z" fill="#E8483C" stroke="#1C1C1A" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M120 88 L148 66 Q156 61 153 73 L143 90 Z" fill="#E8483C" stroke="#1C1C1A" stroke-width="2.4" stroke-linejoin="round"/>
+            <!-- Knoten -->
+            <rect x="111" y="80" width="18" height="16" rx="3" fill="#E8483C" stroke="#1C1C1A" stroke-width="2.4"/>
+          </g>
+        </svg>
+      </span>
+    </button>
+
+    <!-- AUFMACHEN-Callout mit Schnörkel-Pfeil aufs Geschenk -->
+    <div class="hint" id="hint">
+      <svg class="arrow" viewBox="0 0 48 56" aria-hidden="true">
+        <path class="shaft" d="M40 52 C 38 41, 27 43, 26 33 A 4 4 0 1 1 33 31 C 32 22, 24 17, 19 7"/>
+        <path class="head" d="M12.5 14 L19 6.5 L26.5 13"/>
+      </svg>
+      <span class="tag cta rot-r" style="--rot:3deg">Aufmachen</span>
+    </div>
+
+    <div class="empty-note" id="emptyNote" aria-hidden="true">
+      <span class="tag rot-r label">Leer <span class="burst">✳</span></span>
+    </div>
+  </div>
+
+  <!-- ============ SCHRITT 3 + 4: TEXTE ============ -->
+  <div class="reveal" id="reveal" hidden>
+
+    <!-- Schritt 3: Teaser -->
+    <p class="teaser" id="teaser" aria-live="polite">
+      <span class="tag rot-l t1">Ist das etwa ein…</span>
+      <span class="tag riso-1 t3" style="--rot:-2deg">Nicht-Geschenk<span aria-hidden="true">???</span></span>
+    </p>
+
+    <!-- Schritt 4: Auflösung -->
+    <section class="resolve card" id="resolve" aria-live="polite">
+      <div class="kicker">
+        <span class="smiley gold" aria-hidden="true">☺</span>
+        <span class="label">Die Auflösung</span>
+        <span class="burst" aria-hidden="true">✳</span>
+      </div>
+
+      <div class="headline">
+        <span class="tag rot-l" style="--rot:-4deg">Jaaaa!</span>
+        <span class="tag riso-2-outline rot-r" style="--rot:3deg">Nichts</span>
+      </div>
+
+      <p class="body">Hiermit sei feierlich verkündet: Zwischen uns wird künftig <span class="hl">zu keinem Geburtstag mehr geschenkt</span>. Nie wieder wirst du an einem grauen Novemberabend wach liegen müssen und dich fragen, ob Gregor schon was besorgt hat oder ob Amazon Prime noch rechtzeitig liefern wird: Du bist <span class="hl">von der sozialen Pflicht des Schenkens entbunden</span>. Und dem, was noch viiiiieeeel schwerer wiegt: <span class="hl">Von der Pflicht, darüber nachzudenken</span>. :-D <span class="hl">Happy Platz-im-Kopf-für-Anderes</span>, entgegen sozialer Normen! :-) Fühl dich gedrückt!</p>
+
+      <div class="divider" aria-hidden="true">
+        <span class="ln"></span><span class="burst">✳</span><span class="smiley">☺</span><span class="burst">✳</span><span class="ln"></span>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<!-- Overlays -->
+<div id="flash" aria-hidden="true"></div>
+<canvas id="poof" aria-hidden="true"></canvas>
+
+<script>
+/* ============================================================
+   KONFIGURATION  —  hier anpassen
+============================================================ */
+
+// Die drei freigestellten Sticker-Motive. Alle drei liegen im selben
+// Ordner wie diese HTML-Datei.
+// ACHTUNG: Groß-/Kleinschreibung exakt so lassen (case-sensitive auf GitHub Pages).
+const STICKER_IMAGES = [
+  "VictorSticker1.png",   // Daumen hoch – der "Held"
+  "VictorSticker2.png",   // Spaghettieis
+  "VictorSticker3.png"    // Goldjacke + Hut
+];
+
+// Optional: sein Name. Wenn gesetzt, erscheint er als grosser Tag unter
+// "HAPPY BIRTHDAY" auf der Startseite und im Seitentitel. Leer = kein Namens-Tag.
+const NAME = "Victor";
+
+// Sollen die Foto-Sticker in Graustufen laufen? (Zine-Disziplin = true.)
+// Auf false stellen, wenn die Motive in Farbe fluten sollen.
+const STICKER_GRAYSCALE = true;
+
+// Text-Sticker, die zusätzlich zu den Fotos durch die Flut ploppen.
+// Beliebig ergänzen/kürzen – werden in Grossbuchstaben dargestellt.
+const STICKER_WORDS = [
+  "kein Geschenk mehr",
+  "wow",
+  "nichts",
+  "endlich geschenke frei",
+  "nada",
+  "nix",
+  "jaaaa"
+];
+
+/* ============================================================
+   INTERN
+============================================================ */
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const stage      = document.getElementById("stage");
+const giftBtn    = document.getElementById("giftBtn");
+const giftSvg    = document.getElementById("giftSvg");
+const hint       = document.getElementById("hint");
+const emptyNote  = document.getElementById("emptyNote");
+const reveal     = document.getElementById("reveal");
+const teaser     = document.getElementById("teaser");
+const resolve    = document.getElementById("resolve");
+const echoLayer  = document.getElementById("echoLayer");
+const flash      = document.getElementById("flash");
+const canvas     = document.getElementById("poof");
+const ctx        = canvas.getContext("2d");
+
+let opened = false;
+let flooded = false;
+
+/* ---- Ausweich-Gag: das Geschenk entwischt die ersten Male ---- */
+const isTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+// So oft purzelt es weg, bevor es sich fangen lässt (überall 2, öffnet beim 3. Versuch).
+const DODGE_MAX = reduceMotion ? 0 : 2;
+// Label-Wechsel pro Fehlversuch (kurz & trocken). [0] ist der Startzustand.
+const DODGE_LABELS = ["Aufmachen", "Fast!", "Nein", "Haha"];
+let dodges = 0;
+let baseC = null;                       // Ausgangszentrum (Viewport-Koordinaten)
+let curDx = 0, curDy = 0;               // aktueller Versatz vom Ausgangspunkt
+const ctaTag = hint.querySelector(".cta");
+
+/* ---- Namen einsetzen (falls gesetzt): Landing-Tag + Titel, Texte bleiben unverändert ---- */
+const nameTag = document.getElementById("nameTag");
+if (NAME && NAME.trim()){
+  const n = NAME.trim();
+  nameTag.textContent = n + "!";
+  nameTag.hidden = false;
+  document.title = `Happy Birthday, ${n}!`;
+}
+
+/* ---- Kringel-Pfeil: exakte Pfadlängen setzen, damit er sich sauber zeichnet ---- */
+document.querySelectorAll(".arrow path").forEach((p) => {
+  p.style.setProperty("--len", p.getTotalLength().toFixed(1));
+});
+
+/* ---- Sticker-Markup erzeugen ---- */
+// src = konkreter Bildpfad. Erzeugt ein <img> im Aufkleber-Look.
+function stickerMarkup(src){
+  const grayCls = STICKER_GRAYSCALE ? " gray" : "";
+  const alt = NAME ? `Sticker von ${escapeHtml(NAME)}` : "Sticker";
+  return `<img class="sticker-media${grayCls}" src="${escapeAttr(src)}" alt="${alt}" draggable="false" />`;
+}
+
+/* ============================================================
+   AUSWEICHEN — das Geschenk entwischt (nur Maus/Touch)
+============================================================ */
+function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+// Ziel im sichtbaren Bereich, nicht am Rand, nicht hinter Headline/Callout
+function dodgeTarget(){
+  const gr = giftBtn.getBoundingClientRect();
+  const gw = gr.width, gh = gr.height;
+  const m = 12;
+  const head = document.querySelector(".landing-head").getBoundingClientRect();
+  const hintR = hint.getBoundingClientRect();
+
+  let top    = Math.max(m, head.bottom + 10) + gh / 2;
+  let bottom = Math.min(innerHeight - m, hintR.top - 10) - gh / 2;
+  let left   = m + gw / 2;
+  let right  = innerWidth - m - gw / 2;
+
+  // Fallbacks, falls die sichere Zone zu klein ist
+  if (bottom < top){ const mid = (Math.max(m, head.bottom) + Math.min(innerHeight - m, hintR.top)) / 2; top = bottom = mid; }
+  if (right < left){ left = right = innerWidth / 2; }
+
+  let tx = rand(left, right);
+  let ty = rand(top, bottom);
+
+  // Touch: näher an der Ausgangsposition halten, damit es fangbar bleibt
+  if (isTouch && baseC){
+    const cap = Math.min(innerWidth, innerHeight) * 0.2;
+    tx = clamp(baseC.x + clamp(tx - baseC.x, -cap, cap), left, right);
+    ty = clamp(baseC.y + clamp(ty - baseC.y, -cap, cap), top, bottom);
+  }
+  return { x: tx, y: ty };
+}
+
+function dodge(){
+  if (baseC === null){
+    const r0 = giftBtn.getBoundingClientRect();      // Ausgangszentrum ohne Sprung-Transform
+    baseC = { x: r0.left + r0.width / 2, y: r0.top + r0.height / 2 };
+    giftBtn.classList.remove("idle");                // Idle-Schweben stoppen für sauberen Sprung
+  }
+  dodges++;
+
+  const t  = dodgeTarget();
+  const dx = t.x - baseC.x;
+  const dy = t.y - baseC.y;
+
+  // Purzeln: 1–2 volle Überschläge in Flugrichtung + Bogen nach oben
+  const dir   = (dx >= curDx) ? 1 : -1;
+  const turns = (Math.random() < 0.5 ? 1 : 2);
+  const spin  = dir * 360 * turns;                   // ganze Umdrehungen → endet aufrecht
+  const midDx = (curDx + dx) / 2 + rand(-24, 24);
+  const midDy = Math.min(curDy, dy) - rand(60, 120); // Sprungbogen
+  const tilt  = rand(-10, 10);
+
+  const anim = giftBtn.animate([
+    { transform: `translate(${curDx}px, ${curDy}px) rotate(0deg) scale(1)`, offset: 0 },
+    { transform: `translate(${midDx}px, ${midDy}px) rotate(${spin * 0.55}deg) scale(1.06)`, offset: 0.5, easing: "cubic-bezier(.25,.8,.5,1)" },
+    { transform: `translate(${dx}px, ${dy}px) rotate(${spin}deg) scale(1)`, offset: 1 }
+  ], { duration: 640, easing: "cubic-bezier(.34,1.45,.5,1)", fill: "forwards" });
+
+  const fdx = dx.toFixed(1), fdy = dy.toFixed(1);
+  anim.onfinish = () => {
+    // Endzustand an Inline-Style übergeben (visuell identisch: aufrecht), dann kurzes Nachwippen
+    giftBtn.style.transform = `translate(${fdx}px, ${fdy}px) rotate(0deg)`;
+    anim.cancel();
+    giftBtn.animate([
+      { transform: `translate(${fdx}px, ${fdy}px) rotate(0deg)` },
+      { transform: `translate(${fdx}px, ${fdy}px) rotate(${tilt.toFixed(1)}deg)` },
+      { transform: `translate(${fdx}px, ${fdy}px) rotate(0deg)` }
+    ], { duration: 300, easing: "ease-out" });
+  };
+
+  curDx = dx; curDy = dy;
+
+  // Callout-Text trocken durchschalten
+  if (ctaTag) ctaTag.textContent = DODGE_LABELS[Math.min(dodges, DODGE_LABELS.length - 1)];
+}
+
+// Einstieg: Pointer weicht ggf. aus, Tastatur/Reduced-Motion öffnet direkt
+function attemptOpen(byPointer){
+  if (opened) return;
+  if (byPointer && !reduceMotion && dodges < DODGE_MAX){
+    dodge();
+    return;
+  }
+  openGift();
+}
+
+/* ============================================================
+   SCHRITT 2: GESCHENK ÖFFNEN
+============================================================ */
+function openGift(){
+  if (opened) return;
+  opened = true;
+
+  giftBtn.classList.remove("idle");
+  giftBtn.setAttribute("aria-disabled", "true");
+  hint.style.opacity = "0";
+
+  // Ursprung des Poofs = Mund des Kartons
+  const r = giftSvg.getBoundingClientRect();
+  const cx = r.left + r.width * 0.5;
+  const cy = r.top  + r.height * 0.42;
+
+  // Aufblitzen
+  if (!reduceMotion) doFlash();
+
+  // Screen-Shake
+  if (!reduceMotion){
+    stage.classList.add("shake");
+    setTimeout(() => stage.classList.remove("shake"), 520);
+  }
+
+  // Deckel auf + Partikel-Burst
+  requestAnimationFrame(() => {
+    giftSvg.classList.add("open");
+    poofBurst(cx, cy);
+  });
+
+  // Karton ist danach sichtbar leer
+  setTimeout(() => emptyNote.classList.add("on"), reduceMotion ? 200 : 560);
+
+  // Kurzer Beat -> Teaser steigt auf
+  const beat = reduceMotion ? 500 : 1250;
+  setTimeout(showTeaser, beat);
+}
+
+function showTeaser(){
+  reveal.hidden = false;
+  // reflow, damit die Transition greift
+  void teaser.offsetWidth;
+  requestAnimationFrame(() => teaser.classList.add("on"));
+
+  // Sanft zum Text scrollen (mobil)
+  setTimeout(() => reveal.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"center"}), 120);
+
+  // Dann ploppt die Auflösung auf
+  const wait = reduceMotion ? 900 : 2200;
+  setTimeout(showResolve, wait);
+}
+
+function showResolve(){
+  resolve.classList.add("on");
+  setTimeout(() => resolve.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"center"}), 260);
+
+  // Kurzer Beat, dann flutet der Sticker von selbst den Hintergrund
+  setTimeout(floodEcho, reduceMotion ? 900 : 1700);
+}
+
+/* ============================================================
+   FLASH
+============================================================ */
+function doFlash(){
+  flash.style.transition = "none";
+  flash.style.opacity = "0.85";
+  requestAnimationFrame(() => {
+    flash.style.transition = "opacity .28s ease-out";
+    flash.style.opacity = "0";
+  });
+}
+
+/* ============================================================
+   PARTIKEL-BURST ("Nichts"-Wolke)
+============================================================ */
+let particles = [];
+let poofRunning = false;
+
+function sizeCanvas(){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width  = Math.floor(innerWidth  * dpr);
+  canvas.height = Math.floor(innerHeight * dpr);
+  canvas.style.width  = innerWidth + "px";
+  canvas.style.height = innerHeight + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+sizeCanvas();
+addEventListener("resize", () => { sizeCanvas(); }, {passive:true});
+
+function rand(a, b){ return a + Math.random() * (b - a); }
+
+function poofBurst(cx, cy){
+  const N = reduceMotion ? 34 : 155;
+
+  for (let i = 0; i < N; i++){
+    const up = -Math.PI / 2;                 // Richtung: nach oben
+    const spread = reduceMotion ? 0.5 : 1.15;
+    const ang = up + rand(-spread, spread);
+    const spd = rand(0.6, reduceMotion ? 2.4 : 5.2);
+    const isDust = Math.random() < 0.32;     // ein paar schnelle Staubkörner
+
+    // Graustufen-Rauch: Mischung hell / mittel / dunkel
+    const t = Math.random();
+    let g;
+    if (t < 0.5)      g = Math.round(rand(232, 246)); // helle Wolke
+    else if (t < 0.82)g = Math.round(rand(120, 165)); // mittleres Grau
+    else              g = Math.round(rand(40, 78));   // dunkle Fetzen
+
+    particles.push({
+      x: cx + rand(-14, 14),
+      y: cy + rand(-8, 8),
+      vx: Math.cos(ang) * spd * (isDust ? 1.7 : 1),
+      vy: Math.sin(ang) * spd * (isDust ? 1.7 : 1) - rand(0.4, 1.6),
+      r: isDust ? rand(2, 5) : rand(14, 42),
+      grow: isDust ? rand(0.2, 0.6) : rand(0.5, 1.5),
+      g,
+      alpha: isDust ? rand(0.55, 0.9) : rand(0.35, 0.7),
+      life: 0,
+      maxLife: reduceMotion ? rand(28, 46) : rand(58, 120),
+      drift: reduceMotion ? 0 : rand(-0.25, 0.25),
+      dust: isDust
+    });
+  }
+
+  if (!poofRunning){
+    poofRunning = true;
+    requestAnimationFrame(tick);
+  }
+}
+
+function tick(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  let alive = 0;
+
+  for (const p of particles){
+    if (p.life >= p.maxLife) continue;
+    alive++;
+
+    p.life++;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vx += p.drift;
+    p.vy += 0.045;          // leichte Schwerkraft für den Fall der Fetzen
+    p.vx *= 0.985;          // Luftwiderstand
+    p.vy *= 0.985;
+    p.r  += p.grow;         // Wolke dehnt sich beim Aufsteigen
+
+    const lifeFrac = p.life / p.maxLife;
+    const a = p.alpha * (1 - lifeFrac) * (1 - lifeFrac);
+
+    if (p.dust){
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(${p.g},${p.g},${p.g-6},${a})`;
+      ctx.arc(p.x, p.y, Math.max(0.5, p.r), 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // weiche Rauchflocke via Radialverlauf
+      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+      grd.addColorStop(0, `rgba(${p.g},${p.g},${p.g},${a})`);
+      grd.addColorStop(1, `rgba(${p.g},${p.g},${p.g},0)`);
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  if (alive > 0){
+    requestAnimationFrame(tick);
+  } else {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles = [];
+    poofRunning = false;
+  }
+}
+
+/* ============================================================
+   SCHRITT 5: ECHO-FLUT (iMessage-Stil)
+============================================================ */
+function floodEcho(){
+  if (flooded) return;
+  flooded = true;
+
+  const vw = innerWidth, vh = innerHeight;
+  const area = vw * vh;
+
+  // Ziel-Anzahl an Bildschirmgröße koppeln (Handy = weniger)
+  let target = Math.round(area / 24000);
+  target = Math.max(24, Math.min(target, reduceMotion ? 42 : 104));
+
+  // Raster mit möglichst quadratischen Zellen, Zellenzahl ~ Ziel
+  const cols = Math.max(3, Math.round(Math.sqrt(target * vw / vh)));
+  const rows = Math.max(3, Math.round(target / cols));
+  const cellW = vw / cols, cellH = vh / rows;
+  const cell  = Math.min(cellW, cellH);
+  const total = cols * rows;
+
+  const hasWords = STICKER_WORDS && STICKER_WORDS.length > 0;
+  const nextWord = makeQueue(STICKER_WORDS);   // zyklisch, ohne unmittelbare Wortwiederholung
+  const nextImg  = makeQueue(STICKER_IMAGES);
+
+  const frag = document.createDocumentFragment();
+  let idx = 0;
+
+  for (let r = 0; r < rows; r++){
+    for (let c = 0; c < cols; c++){
+      const el = document.createElement("div");
+      el.className = "echo";
+
+      // Zellzentrum + Jitter (bis ~38% der Zellgröße) → flächig, aber nicht starr
+      const x = (c + 0.5) * cellW + rand(-0.38, 0.38) * cellW;
+      const y = (r + 0.5) * cellH + rand(-0.38, 0.38) * cellH;
+      el.style.left = x.toFixed(1) + "px";
+      el.style.top  = y.toFixed(1) + "px";
+      el.style.setProperty("--er", rand(-8, 8).toFixed(1) + "deg");
+
+      // gestaffelt von klein auf gross
+      const delay = reduceMotion ? rand(0, 0.5) : (idx * (1.15 / total) + rand(0, 0.1));
+      el.style.setProperty("--ed", delay.toFixed(2) + "s");
+
+      // Schachbrett: ausgewogen, nie zwei gleiche Typen direkt nebeneinander
+      const wantWord = hasWords && ((r + c) % 2 === 0);
+      if (wantWord){
+        el.innerHTML = textMarkup(nextWord(), cell);
+      } else {
+        // Fotos moderat kleiner halten, damit sie nicht zu "Matsch" verlaufen
+        const size = Math.max(46, cell * rand(0.5, 0.78));
+        el.style.width  = size.toFixed(0) + "px";
+        el.style.height = size.toFixed(0) + "px";
+        el.innerHTML = stickerMarkup(nextImg());
+      }
+      frag.appendChild(el);
+      idx++;
+    }
+  }
+
+  echoLayer.appendChild(frag);
+
+  // Pop auslösen
+  requestAnimationFrame(() => {
+    echoLayer.querySelectorAll(".echo").forEach(el => el.classList.add("pop"));
+  });
+}
+
+/* ============================================================
+   EVENTS
+============================================================ */
+// Ein Klick: per Pointer (Maus/Touch) hat detail > 0, per Tastatur (Enter/Space) detail 0.
+// So weicht das Geschenk nur bei Maus/Touch aus – Tastatur öffnet zuverlässig direkt.
+giftBtn.addEventListener("click", (e) => attemptOpen(e.detail > 0));
+/* ============================================================
+   HELFER
+============================================================ */
+// Fisher-Yates-Mischung (Kopie)
+function shuffle(a){
+  const arr = a.slice();
+  for (let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+// Zyklische Warteschlange: verteilt alle Einträge, bevor sich einer wiederholt
+function makeQueue(arr){
+  let q = [];
+  return () => {
+    if (!arr || !arr.length) return "";
+    if (!q.length) q = shuffle(arr);
+    return q.pop();
+  };
+}
+
+// Markup für einen Text-Sticker (Papier-Aufkleber im Tag-System)
+function textMarkup(word, base){
+  let fs = base * rand(0.18, 0.30);       // moderater Grössenbereich
+  if (word.length > 10) fs *= 0.6;        // lange Sprüche kleiner setzen
+  fs = Math.max(13, Math.min(fs, 34));
+  // Akzent-Verteilung: überwiegend greige, nur punktuell Riso/Ink
+  const r = Math.random();
+  let cls = "";
+  if      (r < 0.62) cls = "";
+  else if (r < 0.80) cls = "a-ink";
+  else if (r < 0.91) cls = "a-r1";
+  else               cls = "a-r2";
+  return `<span class="echo-tag ${cls}" style="font-size:${fs.toFixed(1)}px">${escapeHtml(word)}</span>`;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+function escapeAttr(s){ return escapeHtml(s); }
+</script>
+</body>
+</html>
